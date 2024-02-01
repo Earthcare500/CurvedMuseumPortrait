@@ -6,83 +6,6 @@
     <title>Unity WebGL Player | CurvedPanel</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
-    <style>
-      html {
-          box-sizing: border-box;
-      }
-
-      *,
-      *:before,
-      *:after {
-          box-sizing: inherit;
-      }
-
-      html,
-      body {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-      }
-
-      canvas {
-          display: block;
-      }
-
-      body {
-          margin: 0;
-      }
-
-      #unity-container {
-          width: 100%;
-          height: 100%;
-      }
-
-      #unity-canvas {
-          width: 100%;
-          height: 100%;
-          background: #231F20;
-      }
-      #unity-loading-bar {
-          flex: 1 1 auto;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          place-items: center;
-          width: 100%;
-          height: 100%;
-          background: rgb(18, 21, 21);
-      }
-
-      #unity-progress-bar-empty {
-          width: 80%;
-          height: 24px;
-          text-align: left;
-          border: 1px solid rgb(255, 255, 255);
-          position: absolute;
-          left: 10%;
-          top: 50%;
-      }
-
-      #unity-progress-bar-full {
-          width: 0%;
-          height: 100%;
-          background: rgb(0, 247, 255);
-      }
-
-      .light #unity-progress-bar-empty {
-          border-color: black;
-      }
-
-      .light #unity-progress-bar-full {
-          background: black;
-      }
-
-
-  </style>
-
   </head>
   <body>
     <div id="unity-container" class="unity-desktop">
@@ -133,7 +56,18 @@
         updateBannerVisibility();
       }
 
-   
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/CurvedPan.loader.js";
+      var config = {
+        dataUrl: buildUrl + "/CurvedPan.data",
+        frameworkUrl: buildUrl + "/CurvedPan.framework.js",
+        codeUrl: buildUrl + "/CurvedPan.wasm",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "CurvedPanel",
+        productVersion: "0.1",
+        showBanner: unityShowBanner,
+      };
 
       // By default, Unity keeps WebGL canvas render target size matched with
       // the DOM size of the canvas element (scaled by window.devicePixelRatio)
@@ -164,11 +98,25 @@
         canvas.style.height = "600px";
       }
 
+      loadingBar.style.display = "block";
 
-    
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          progressBarFull.style.width = 100 * progress + "%";
+              }).then((unityInstance) => {
+                loadingBar.style.display = "none";
+                fullscreenButton.onclick = () => {
+                  unityInstance.SetFullscreen(1);
+                };
+              }).catch((message) => {
+                alert(message);
+              });
+            };
+
+      document.body.appendChild(script);
 
     </script>
-  <script src="Build/UnitySetup.js"></script>
-
   </body>
 </html>
