@@ -223,7 +223,6 @@
       script.src = loaderUrl;
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
-                progressBarEmpty.style.display = "";
                 progressBarFull.style.width = `${100 * progress}%`;
               }).then((unityInstance) => {
                 loadingBar.style.display = "none";
